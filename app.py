@@ -44,22 +44,29 @@ else:
 
     if uploaded_file is not None:
         img = Image.open(uploaded_file)
-        st.image(img, caption='Uploaded Image', use_column_width=True)
+        
+        # NOTE: Using 'use_container_width' instead of deprecated 'use_column_width'
+        st.image(img, caption='Uploaded Image', use_container_width=True) 
 
         with st.spinner('Analyzing image and predicting breed...'):
+            
+            # --- CRITICAL FIX: Unconditionally convert to RGB (3 channels) first to prevent 1-channel or 4-channel errors ---
+            img = img.convert('RGB')
+            # -----------------------------------------------------------------------------------------------------------------
+
             img = img.resize((224, 224))
             img_array = image.img_to_array(img)
             img_array = np.expand_dims(img_array, axis=0)
             img_array = img_array / 255.0
             
-            # --- FIX: Explicitly cast to float32 to match model's expected dtype ---
+            # --- Previous FIX: Explicitly cast to float32 to match model's expected dtype ---
             img_array = img_array.astype(np.float32)
             # ------------------------------------------------------------------------
 
             try:
                 predictions = model.predict(img_array)
             except Exception as e:
-                st.error(f"Error during prediction: {e}. Please check model compatibility.")
+                st.error(f"Error during prediction: {e}. Please check model compatibility, shape, and normalization.")
                 # Exit the block if prediction failed
                 st.stop()
                 
