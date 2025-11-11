@@ -32,7 +32,9 @@ model = None
 if MODEL_IMPORTS_SUCCESS:
     model = load_classification_model()
 
-class_names = ['german_shepherd', 'golden_retriever', 'poodle', 'french_bulldog', 'yorkshire_terrier']
+# --- MODIFIED: Changed class names for better display (keeping the order the same) ---
+class_names = ['German Shepherd', 'Golden Retriever', 'Poodle', 'French Bulldog', 'Yorkshire Terrier']
+# --------------------------------------------------------------------------------------
 
 st.title('🐶 Dog Breed Classifier')
 st.write('Upload an image of a dog to predict its breed.')
