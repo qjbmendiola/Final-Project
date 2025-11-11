@@ -1,4 +1,4 @@
 streamlit==1.51.0
-tensorflow
+tensorflow  # REMOVED the version pin (==2.10.0)
 numpy
 Pillow
