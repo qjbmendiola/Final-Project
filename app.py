@@ -38,83 +38,93 @@ if MODEL_IMPORTS_SUCCESS:
 class_names = ['French Bulldog', 'German Shepherd', 'Golden Retriever', 'Poodle', 'Yorkshire Terrier']
 # ------------------
 
-# --- Page Header and Introduction ---
+# --- Page Header ---
 st.title('🐶 Dog Breed Classifier')
 st.write('Upload an image of a dog to predict its breed.')
 
-# --- Explanation of Breeds ---
-st.subheader('Supported Breeds')
-st.info(
-    f"""
-    This model is trained to classify images into **5 specific dog breeds**:
-    - **{class_names[0]}**
-    - **{class_names[1]}**
-    - **{class_names[2]}**
-    - **{class_names[3]}**
-    - **{class_names[4]}**
-    
-    For the best results, please upload an image of one of these breeds!
-    """
-)
-# ----------------------------------
+# Define two columns for the main layout: 1 part for input, 2 parts for output/image
+col_input, col_output = st.columns([1, 2])
 
-if model is None or not MODEL_IMPORTS_SUCCESS:
-    st.info("App functionality is disabled due to critical dependency failure.")
-else:
-    # Single column layout for maximum simplicity
-    
+with col_input:
+    # --- Input Section ---
     st.subheader('1. Upload an Image')
     uploaded_file = st.file_uploader('Choose an image...', type=['jpg', 'jpeg', 'png'], label_visibility="collapsed")
     
+    # --- Explanation of Breeds ---
+    st.subheader('Supported Breeds')
+    st.info(
+        f"""
+        This model classifies images into **5 specific dog breeds**:
+        - **{class_names[0]}**
+        - **{class_names[1]}**
+        - **{class_names[2]}**
+        - **{class_names[3]}**
+        - **{class_names[4]}**
+        
+        For the best results, please upload an image of one of these breeds!
+        """
+    )
+    # ----------------------------------
+
+# Handle model loading errors
+if model is None or not MODEL_IMPORTS_SUCCESS:
+    with col_output:
+        st.info("App functionality is disabled due to critical dependency failure.")
+else:
+    # This block handles the prediction and display in the output column
     if uploaded_file is not None:
         img = Image.open(uploaded_file)
         
-        st.subheader('2. Image & Prediction')
-        st.image(img, caption='Uploaded Photo', use_container_width=True) 
+        with col_output:
+            st.subheader('2. Image & Prediction')
+            st.image(img, caption='Uploaded Photo', use_container_width=True) 
 
-        with st.spinner('Analyzing image and predicting breed...'):
-            
-            # --- Preprocessing identical to original code ---
-            img = img.convert('RGB')
-            img = img.resize((224, 224))
-            img_array = image.img_to_array(img)
-            img_array = np.expand_dims(img_array, axis=0)
-            img_array = img_array / 255.0
-            img_array = img_array.astype(np.float32)
-            
-            try:
-                predictions = model.predict(img_array)
-            except Exception as e:
-                st.error(f"Error during prediction: {e}. Please check model compatibility, shape, and normalization.")
-                st.stop()
+            with st.spinner('Analyzing image and predicting breed...'):
                 
-            predicted_class = class_names[np.argmax(predictions[0])]
-            confidence = np.max(predictions[0])
-            
-        # --- Simple Streamlit Results Display ---
-        st.success(f'Prediction Confirmed: {predicted_class}')
-        st.header('Prediction Results')
+                # --- Preprocessing identical to original code ---
+                img = img.convert('RGB')
+                img = img.resize((224, 224))
+                img_array = image.img_to_array(img)
+                img_array = np.expand_dims(img_array, axis=0)
+                img_array = img_array / 255.0
+                img_array = img_array.astype(np.float32)
+                
+                try:
+                    predictions = model.predict(img_array)
+                except Exception as e:
+                    st.error(f"Error during prediction: {e}. Please check model compatibility, shape, and normalization.")
+                    st.stop()
+                    
+                predicted_class = class_names[np.argmax(predictions[0])]
+                confidence = np.max(predictions[0])
+                
+            # --- Simple Streamlit Results Display ---
+            st.success(f'Prediction Confirmed: {predicted_class}')
+            st.markdown("---")
+            st.subheader('Top Prediction Results')
 
-        top_3_indices = np.argsort(predictions[0])[-3:][::-1]
-        
-        cols_results = st.columns(3)
-        
-        for i, idx in enumerate(top_3_indices):
-            breed = class_names[idx]
-            score = predictions[0][idx]
+            top_3_indices = np.argsort(predictions[0])[-3:][::-1]
             
-            with cols_results[i]:
-                # Use st.metric for a clean display of results
-                if i == 0:
-                    st.metric(label=f"🥇 Predicted Breed", value=breed, delta=f"{score*100:.2f}% Confidence")
-                else:
-                    st.metric(label=f"{i+1}. Alternative", value=breed, delta=f"{score*100:.2f}% Confidence")
-        # ------------------------------------------------
+            # Use three smaller columns inside the output column for metrics
+            cols_metrics = st.columns(3)
+            
+            for i, idx in enumerate(top_3_indices):
+                breed = class_names[idx]
+                score = predictions[0][idx]
+                
+                with cols_metrics[i]:
+                    # Use st.metric for a clean display of results
+                    if i == 0:
+                        st.metric(label=f"🥇 Predicted Breed", value=breed, delta=f"{score*100:.2f}% Confidence")
+                    else:
+                        st.metric(label=f"{i+1}. Alternative", value=breed, delta=f"{score*100:.2f}% Confidence")
+            # ------------------------------------------------
 
     else:
-        st.info("Waiting for an image to be uploaded...")
-        st.image(
-            "https://placehold.co/400x300/e0e0e0/333333?text=Image+Preview",
-            caption="Preview Area",
-            use_container_width=True
-        )
+        with col_output:
+            st.info("Waiting for an image to be uploaded...")
+            st.image(
+                "https://placehold.co/400x300/e0e0e0/333333?text=Image+Preview",
+                caption="Preview Area",
+                use_container_width=True
+            )
