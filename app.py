@@ -38,6 +38,16 @@ st.markdown("""
         font-weight: bold;
         color: #36454F; /* Charcoal */
         margin-top: 10px;
+        margin-bottom: 20px;
+    }
+
+    /* Confidence Label Style */
+    .confidence-label {
+        margin-top: 20px;
+        display: block;
+        font-size: 16px;
+        font-weight: 500;
+        color: #36454F;
     }
 
     /* Confidence Bar Styling */
@@ -47,6 +57,7 @@ st.markdown("""
         height: 25px;
         overflow: hidden;
         margin-top: 15px;
+        width: 100%; /* Ensure it takes full width of the padding */
     }
     .confidence-fill {
         background-color: #4CAF50; /* Success Green */
@@ -163,7 +174,7 @@ else:
                 confidence = np.max(predictions[0])
                 confidence_percent = confidence * 100
                 
-            # --- Consolidated Result Card Display (FIXED) ---
+            # --- Consolidated Result Card Display (FINAL FIX) ---
             st.markdown(f"""
                 <div class="result-card">
                     <h2 style="color:#ff4500; margin-top:0;">Prediction Confirmed!</h2>
@@ -171,7 +182,7 @@ else:
                         The model believes this is a **{predicted_class}**!
                     </p>
                     
-                    <p style="margin-top: 20px;">Model Confidence:</p>
+                    <span class="confidence-label">Model Confidence:</span>
                     <div class="confidence-bar-container">
                         <div class="confidence-fill" style="width: {confidence_percent:.0f}%">
                             {confidence_percent:.2f}%
