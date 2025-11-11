@@ -113,6 +113,21 @@ with col_input:
     
     # File uploader goes into the first column
     uploaded_file = st.file_uploader('Choose an image...', type=['jpg', 'jpeg', 'png'], label_visibility="collapsed")
+    
+    # --- NEW EXPLANATION ADDED HERE ---
+    st.info(
+        f"""
+        This model is trained to classify images into **5 specific dog breeds**:
+        - **{class_names[0]}**
+        - **{class_names[1]}**
+        - **{class_names[2]}**
+        - **{class_names[3]}**
+        - **{class_names[4]}**
+        
+        For the best results, please upload an image of one of these breeds!
+        """
+    )
+    # ----------------------------------
 
 if model is None or not MODEL_IMPORTS_SUCCESS:
     with col_output:
