@@ -3,15 +3,18 @@ import numpy as np
 from PIL import Image
 
 try:
+    # Try importing from the older Keras path
     from keras.models import load_model
     from keras.preprocessing import image
     MODEL_IMPORTS_SUCCESS = True
 except ImportError:
     try:
+        # Try importing from the TensorFlow Keras path (recommended modern path)
         from tensorflow.keras.models import load_model
         from tensorflow.keras.preprocessing import image
         MODEL_IMPORTS_SUCCESS = True
     except ImportError:
+        # Fallback error state if both fail
         st.error("🚨 Module Error: The 'keras' or 'tensorflow' dependency failed to install/load.")
         st.warning("Please verify your Requirements.txt and ensure a clean Streamlit redeploy.")
         MODEL_IMPORTS_SUCCESS = False
@@ -19,6 +22,7 @@ except ImportError:
 @st.cache_resource
 def load_classification_model():
     try:
+        # Ensure the model file is present in the repository root
         return load_model('dog_breed_model.h5')
     except Exception as e:
         st.error(f"Failed to load model file 'dog_breed_model.h5'. Error: {e}")
@@ -47,8 +51,18 @@ else:
             img_array = image.img_to_array(img)
             img_array = np.expand_dims(img_array, axis=0)
             img_array = img_array / 255.0
+            
+            # --- FIX: Explicitly cast to float32 to match model's expected dtype ---
+            img_array = img_array.astype(np.float32)
+            # ------------------------------------------------------------------------
 
-            predictions = model.predict(img_array)
+            try:
+                predictions = model.predict(img_array)
+            except Exception as e:
+                st.error(f"Error during prediction: {e}. Please check model compatibility.")
+                # Exit the block if prediction failed
+                st.stop()
+                
             predicted_class = class_names[np.argmax(predictions[0])]
             confidence = np.max(predictions[0])
 
