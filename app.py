@@ -20,9 +20,8 @@ st.markdown("""
         margin-bottom: 20px;
     }
 
-    /* Styled Result Card CONTAINER */
-    /* This will now wrap the Streamlit components */
-    .result-card-container {
+    /* Consolidated Result Card Styling */
+    .result-card {
         border-radius: 20px;
         padding: 30px;
         margin-top: 30px;
@@ -30,6 +29,7 @@ st.markdown("""
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
         border: 3px solid #ff4500;
         text-align: center;
+        margin-bottom: 20px; /* Add some space below the card */
     }
 
     /* Prediction Text within the card */
@@ -163,22 +163,22 @@ else:
                 confidence = np.max(predictions[0])
                 confidence_percent = confidence * 100
                 
-            # --- FIXED: Creative Result Card Display using st.container and targeted st.markdown ---
-            # Use a container to apply the result-card-container styling
-            with st.container():
-                st.markdown('<div class="result-card-container">', unsafe_allow_html=True)
-                st.markdown(f'<h2 style="color:#ff4500; margin-top:0;">Prediction Confirmed!</h2>', unsafe_allow_html=True)
-                st.markdown(f'<p class="prediction-text">The model believes this is a **{predicted_class}**!</p>', unsafe_allow_html=True)
-                
-                st.markdown(f"<p style='margin-top: 20px;'>Model Confidence:</p>", unsafe_allow_html=True)
-                st.markdown(f"""
+            # --- Consolidated Result Card Display (FIXED) ---
+            st.markdown(f"""
+                <div class="result-card">
+                    <h2 style="color:#ff4500; margin-top:0;">Prediction Confirmed!</h2>
+                    <p class="prediction-text">
+                        The model believes this is a **{predicted_class}**!
+                    </p>
+                    
+                    <p style="margin-top: 20px;">Model Confidence:</p>
                     <div class="confidence-bar-container">
                         <div class="confidence-fill" style="width: {confidence_percent:.0f}%">
                             {confidence_percent:.2f}%
                         </div>
                     </div>
-                """, unsafe_allow_html=True)
-                st.markdown('</div>', unsafe_allow_html=True) # Close the result-card-container div
+                </div>
+            """, unsafe_allow_html=True)
             # -------------------------------------------------------------------------------------
 
             # --- Top 3 Display ---
