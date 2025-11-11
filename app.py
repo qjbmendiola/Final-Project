@@ -160,7 +160,7 @@ else:
                 confidence = np.max(predictions[0])
                 confidence_percent = confidence * 100
                 
-            # --- Creative Result Card Display (Replaces st.success/st.info) ---
+            # --- Creative Result Card Display (FIXED: Added unsafe_allow_html=True) ---
             st.markdown(f"""
                 <div class="result-card">
                     <h2 style="color:#ff4500; margin-top:0;">Prediction Confirmed!</h2>
