@@ -32,9 +32,9 @@ model = None
 if MODEL_IMPORTS_SUCCESS:
     model = load_classification_model()
 
-# --- MODIFIED: Changed class names for better display (keeping the order the same) ---
-class_names = ['German Shepherd', 'Golden Retriever', 'Poodle', 'French Bulldog', 'Yorkshire Terrier']
-# --------------------------------------------------------------------------------------
+# --- CRITICAL FIX: The order now matches the Colab output (Index 0: French Bulldog, Index 1: German Shepherd, etc.) ---
+class_names = ['French Bulldog', 'German Shepherd', 'Golden Retriever', 'Poodle', 'Yorkshire Terrier']
+# -----------------------------------------------------------------------------------------------------------------------
 
 st.title('🐶 Dog Breed Classifier')
 st.write('Upload an image of a dog to predict its breed.')
