@@ -1,4 +1,4 @@
 streamlit
-keras
+tensorflow==2.8.0
 numpy
 Pillow
