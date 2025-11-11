@@ -20,8 +20,9 @@ st.markdown("""
         margin-bottom: 20px;
     }
 
-    /* Styled Result Card */
-    .result-card {
+    /* Styled Result Card CONTAINER */
+    /* This will now wrap the Streamlit components */
+    .result-card-container {
         border-radius: 20px;
         padding: 30px;
         margin-top: 30px;
@@ -30,6 +31,8 @@ st.markdown("""
         border: 3px solid #ff4500;
         text-align: center;
     }
+
+    /* Prediction Text within the card */
     .prediction-text {
         font-size: 32px;
         font-weight: bold;
@@ -114,7 +117,7 @@ with col_input:
     # File uploader goes into the first column
     uploaded_file = st.file_uploader('Choose an image...', type=['jpg', 'jpeg', 'png'], label_visibility="collapsed")
     
-    # --- NEW EXPLANATION ADDED HERE ---
+    # --- Explanation Added ---
     st.info(
         f"""
         This model is trained to classify images into **5 specific dog breeds**:
@@ -160,23 +163,23 @@ else:
                 confidence = np.max(predictions[0])
                 confidence_percent = confidence * 100
                 
-            # --- Creative Result Card Display (FIXED: Added unsafe_allow_html=True) ---
-            st.markdown(f"""
-                <div class="result-card">
-                    <h2 style="color:#ff4500; margin-top:0;">Prediction Confirmed!</h2>
-                    <p class="prediction-text">
-                        The model believes this is a **{predicted_class}**!
-                    </p>
-                    
-                    <p style="margin-top: 20px;">Model Confidence:</p>
+            # --- FIXED: Creative Result Card Display using st.container and targeted st.markdown ---
+            # Use a container to apply the result-card-container styling
+            with st.container():
+                st.markdown('<div class="result-card-container">', unsafe_allow_html=True)
+                st.markdown(f'<h2 style="color:#ff4500; margin-top:0;">Prediction Confirmed!</h2>', unsafe_allow_html=True)
+                st.markdown(f'<p class="prediction-text">The model believes this is a **{predicted_class}**!</p>', unsafe_allow_html=True)
+                
+                st.markdown(f"<p style='margin-top: 20px;'>Model Confidence:</p>", unsafe_allow_html=True)
+                st.markdown(f"""
                     <div class="confidence-bar-container">
                         <div class="confidence-fill" style="width: {confidence_percent:.0f}%">
                             {confidence_percent:.2f}%
                         </div>
                     </div>
-                </div>
-            """, unsafe_allow_html=True)
-            # -----------------------------------------------------------------
+                """, unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True) # Close the result-card-container div
+            # -------------------------------------------------------------------------------------
 
             # --- Top 3 Display ---
             st.markdown("---")
